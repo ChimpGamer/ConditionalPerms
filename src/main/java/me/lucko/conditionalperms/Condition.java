@@ -26,6 +26,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import me.lucko.conditionalperms.conditions.AbstractCondition;
+import me.lucko.conditionalperms.conditions.betonquest.HasCondition;
 import me.lucko.conditionalperms.conditions.bukkit.InGamemode;
 import me.lucko.conditionalperms.conditions.bukkit.InWorld;
 import me.lucko.conditionalperms.conditions.bukkit.IsFlying;
@@ -58,6 +59,8 @@ enum Condition {
 
     IN_PLOT(new InPlot()),
     IN_OWN_PLOT(new InOwnPlot()),
+
+    HAS_CONDITION(new HasCondition()),
 
     FACS_LAND_NONE(new InFactionsLand(FactionsRegion.NONE)),
     FACS_LAND_WARZONE(new InFactionsLand(FactionsRegion.WARZONE)),

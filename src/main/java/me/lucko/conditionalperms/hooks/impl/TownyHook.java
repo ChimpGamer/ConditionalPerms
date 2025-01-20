@@ -44,7 +44,7 @@ import java.util.UUID;
 public class TownyHook extends AbstractHook {
 
     private final Towny towny;
-    private Map<UUID, TownyRegion> regions = new HashMap<>();
+    private final Map<UUID, TownyRegion> regions = new HashMap<>();
 
     public TownyHook(ConditionalPerms plugin) {
         super(plugin);
@@ -62,7 +62,10 @@ public class TownyHook extends AbstractHook {
                 .bindWith(consumer);
 
         Events.subscribe(PlayerMoveEvent.class)
-                .filter(Events.DEFAULT_FILTERS.ignoreSameBlockAndY())
+                .filter(e ->
+                        e.getFrom().getBlockX() != e.getTo().getBlockX() ||
+                                e.getFrom().getBlockZ() != e.getTo().getBlockZ() ||
+                                !e.getFrom().getWorld().equals(e.getTo().getWorld()))
                 .filter(e -> shouldCheck(TownyHook.class, e.getPlayer().getUniqueId()))
                 .handler(e -> {
                     TownyRegion from = regions.get(e.getPlayer().getUniqueId());

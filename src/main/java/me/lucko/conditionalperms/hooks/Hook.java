@@ -31,14 +31,11 @@ import me.lucko.conditionalperms.hooks.impl.*;
 @AllArgsConstructor
 enum Hook {
 
-    ACIDISLAND("AcidIsland", AcidIslandHook.class),
-    ASKYBLOCK("ASkyBlock", ASkyBlockHook.class),
     COMBAT_TAB_PLUS("CombatTagPlus", CombatTagPlusHook.class),
     FACTIONS("Factions", FactionsHook.class),
     PLACEHOLDER_API("PlaceholderAPI", PlaceholderAPIHook.class),
     PLOT_SQUARED("PlotSquared", PlotSquaredHook.class),
     TOWNY("Towny", TownyHook.class),
-    VANISH_NO_PACKET("VanishNoPacket", VanishNoPacketHook.class),
     WORLD_GUARD("WorldGuard", WorldGuardHook.class);
 
     private final String pluginName;

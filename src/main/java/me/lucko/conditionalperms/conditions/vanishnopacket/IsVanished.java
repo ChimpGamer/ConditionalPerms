@@ -23,22 +23,23 @@
 package me.lucko.conditionalperms.conditions.vanishnopacket;
 
 import me.lucko.conditionalperms.conditions.AbstractCondition;
-import me.lucko.conditionalperms.hooks.impl.VanishNoPacketHook;
 import me.lucko.helper.terminable.TerminableConsumer;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 
 public class IsVanished extends AbstractCondition {
-	public IsVanished() {
-		super(false, VanishNoPacketHook.class);
-	}
+    public IsVanished() {
+        super(false);
+    }
 
-	@Override
-	public boolean shouldApply(Player player, String parameter) {
-		return getPlugin().getHookManager().get(VanishNoPacketHook.class).isVanished(player);
-	}
+    @Override
+    public boolean shouldApply(Player player, String parameter) {
+        return player.getMetadata("vanished").stream()
+                .filter(metaData -> metaData.value() instanceof Boolean).anyMatch(MetadataValue::asBoolean);
+    }
 
-	@Override
-	public void setup(TerminableConsumer consumer) {
-	}
+    @Override
+    public void setup(TerminableConsumer consumer) {
+    }
 }
 

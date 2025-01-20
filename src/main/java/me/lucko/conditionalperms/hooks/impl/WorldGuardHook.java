@@ -50,8 +50,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public class WorldGuardHook extends AbstractHook {
-    private WorldGuardPlugin worldGuard;
-    private Map<UUID, Set<String>> regions = new HashMap<>();
+    private final WorldGuardPlugin worldGuard;
+    private final Map<UUID, Set<String>> regions = new HashMap<>();
 
     WorldGuardHook(ConditionalPerms plugin) {
         super(plugin);
@@ -95,7 +95,11 @@ public class WorldGuardHook extends AbstractHook {
                 .bindWith(consumer);
 
         Events.subscribe(PlayerMoveEvent.class)
-                .filter(Events.DEFAULT_FILTERS.ignoreSameBlock())
+                .filter( e ->
+                        e.getFrom().getBlockX() != e.getTo().getBlockX() ||
+                                e.getFrom().getBlockZ() != e.getTo().getBlockZ() ||
+                                e.getFrom().getBlockY() != e.getTo().getBlockY() ||
+                                !e.getFrom().getWorld().equals(e.getTo().getWorld()))
                 .filter(e -> shouldCheck(WorldGuardHook.class, e.getPlayer().getUniqueId()))
                 .handler(e -> {
                     Set<String> previouslyIn = regions.get(e.getPlayer().getUniqueId());

@@ -27,12 +27,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import me.lucko.conditionalperms.ConditionalPerms;
-import me.lucko.helper.terminable.composite.CompositeTerminable;
+import me.lucko.helper.terminable.module.TerminableModule;
 
 import java.util.UUID;
 
 @AllArgsConstructor
-public abstract class AbstractHook implements CompositeTerminable {
+public abstract class AbstractHook implements TerminableModule {
 
     @Getter(AccessLevel.PROTECTED)
     private final ConditionalPerms plugin;

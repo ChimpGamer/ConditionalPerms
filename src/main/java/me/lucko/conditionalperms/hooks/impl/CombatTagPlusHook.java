@@ -27,7 +27,7 @@ import me.lucko.conditionalperms.events.PlayerEnterCombatEvent;
 import me.lucko.conditionalperms.events.PlayerLeaveCombatEvent;
 import me.lucko.conditionalperms.hooks.AbstractHook;
 import me.lucko.helper.Events;
-import me.lucko.helper.Scheduler;
+import me.lucko.helper.Schedulers;
 import me.lucko.helper.terminable.TerminableConsumer;
 
 import net.minelink.ctplus.CombatTagPlus;
@@ -43,7 +43,7 @@ import java.util.UUID;
 
 public class CombatTagPlusHook extends AbstractHook implements Runnable {
     private final Set<UUID> taggedPlayers = new HashSet<>();
-    private TagManager manager;
+    private final TagManager manager;
 
     CombatTagPlusHook(ConditionalPerms plugin) {
         super(plugin);
@@ -57,8 +57,7 @@ public class CombatTagPlusHook extends AbstractHook implements Runnable {
 
     @Override
     public void setup(TerminableConsumer consumer) {
-        Scheduler.runTaskRepeatingSync(this, 1L, 20L)
-                .bindWith(consumer);
+        Schedulers.sync().runRepeating(this, 1L, 20L).bindWith(consumer);
 
         Events.subscribe(PlayerQuitEvent.class)
                 .handler(e -> taggedPlayers.remove(e.getPlayer().getUniqueId()))

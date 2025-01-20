@@ -33,12 +33,10 @@ import me.lucko.conditionalperms.conditions.AbstractCondition;
 import me.lucko.conditionalperms.hooks.AbstractHook;
 import me.lucko.conditionalperms.hooks.HookManager;
 import me.lucko.helper.Events;
-import me.lucko.helper.Scheduler;
+import me.lucko.helper.Schedulers;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
-import me.lucko.helper.terminable.TerminableConsumer;
-import me.lucko.helper.terminable.composite.CompositeTerminable;
-import me.lucko.helper.utils.Color;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,7 +53,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class ConditionalPerms extends ExtendedJavaPlugin implements CompositeTerminable {
+public class ConditionalPerms extends ExtendedJavaPlugin {
     private static final Splitter DOT_SPLIT = Splitter.on('.').omitEmptyStrings().trimResults();
     private static final Splitter EQUALS_SPLIT = Splitter.on('=').omitEmptyStrings().trimResults().limit(2);
 
@@ -80,7 +78,6 @@ public class ConditionalPerms extends ExtendedJavaPlugin implements CompositeTer
 
     @Override
     public void enable() {
-        bindComposite(this);
 
         for (Condition condition : Condition.values()) {
             condition.getCondition().init(this);
@@ -88,28 +85,25 @@ public class ConditionalPerms extends ExtendedJavaPlugin implements CompositeTer
 
         hookManager = new HookManager(this);
         hookManager.init();
-    }
 
-    @Override
-    public void setup(TerminableConsumer consumer) {
         Events.subscribe(PlayerLoginEvent.class)
                 .handler(e -> attachments.put(e.getPlayer().getUniqueId(), e.getPlayer().addAttachment(this)))
-                .bindWith(consumer);
+                .bindWith(this);
 
         Events.subscribe(PlayerJoinEvent.class)
                 .handler(e -> {
-                   refreshPlayer(e.getPlayer());
-                   refreshPlayer(e.getPlayer(), 20L);
+                    refreshPlayer(e.getPlayer());
+                    refreshPlayer(e.getPlayer(), 20L);
                 })
-                .bindWith(consumer);
+                .bindWith(this);
 
         Events.subscribe(PlayerQuitEvent.class)
                 .handler(e -> e.getPlayer().removeAttachment(attachments.remove(e.getPlayer().getUniqueId())))
-                .bindWith(consumer);
+                .bindWith(this);
     }
 
     public void refreshPlayer(final Player player, long delay) {
-        Scheduler.runLaterSync(() -> refreshPlayer(player), delay);
+        Schedulers.sync().runLater(() -> refreshPlayer(player), delay);
     }
 
     public void refreshPlayer(Player player) {
@@ -254,7 +248,7 @@ public class ConditionalPerms extends ExtendedJavaPlugin implements CompositeTer
     }
 
     private static void msg(CommandSender sender, String message) {
-        sender.sendMessage(Color.colorize("&8&l[&fConditionalPerms&8&l] &7" + message));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8&l[&fConditionalPerms&8&l] &7" + message));
     }
 
     // for maven shade

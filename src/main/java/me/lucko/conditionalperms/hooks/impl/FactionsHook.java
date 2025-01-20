@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class FactionsHook extends AbstractHook {
-    private Map<UUID, FactionsRegion> regions = new HashMap<>();
+    private final Map<UUID, FactionsRegion> regions = new HashMap<>();
 
     FactionsHook(ConditionalPerms plugin) {
         super(plugin);
@@ -60,7 +60,7 @@ public class FactionsHook extends AbstractHook {
 
     @Override
     public void setup(TerminableConsumer consumer) {
-        consumer.bindRunnable(() -> FactionsFramework.get().stop());
+        //consumer.bindRunnable(() -> FactionsFramework.get().stop());
 
         Events.subscribe(PlayerLoginEvent.class)
                 .handler(e -> regions.put(e.getPlayer().getUniqueId(), getRegion(e.getPlayer())))
@@ -71,7 +71,10 @@ public class FactionsHook extends AbstractHook {
                 .bindWith(consumer);
 
         Events.subscribe(PlayerMoveEvent.class)
-                .filter(Events.DEFAULT_FILTERS.ignoreSameChunk())
+                .filter(e ->
+                        (e.getFrom().getBlockX() >> 4) != (e.getTo().getBlockX() >> 4) ||
+                                (e.getFrom().getBlockZ() >> 4) != (e.getTo().getBlockZ() >> 4) ||
+                                !e.getFrom().getWorld().equals(e.getTo().getWorld()))
                 .filter(e -> shouldCheck(FactionsHook.class, e.getPlayer().getUniqueId()))
                 .handler(e -> {
                     FactionsRegion from = regions.get(e.getPlayer().getUniqueId());

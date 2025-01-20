@@ -31,6 +31,7 @@ import org.bukkit.plugin.PluginManager;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class HookManager {
@@ -44,16 +45,12 @@ public class HookManager {
             try {
                 if (pm.isPluginEnabled(hook.getPluginName())) {
                     AbstractHook ah = make(hook.getClazz(), plugin);
-                    if (ah != null) {
-                        plugin.bindComposite(ah);
-                        hooks.put(hook.getClazz(), ah);
-                    }
+                    hooks.put(hook.getClazz(), ah);
 
                     plugin.getLogger().info("Hooked with " + hook.getPluginName() + "...");
                 }
             } catch (Exception e) {
-                plugin.getLogger().severe("Exception thrown whilst hooking with " + hook.getPluginName() + "...");
-                e.printStackTrace();
+                plugin.getLogger().log(Level.SEVERE,"Exception thrown whilst hooking with " + hook.getPluginName() + "...", e);
             }
         }
     }
@@ -68,8 +65,8 @@ public class HookManager {
     }
 
     private static AbstractHook make(Class<? extends AbstractHook> clazz, ConditionalPerms plugin) throws Exception {
-        Constructor constructor = clazz.getDeclaredConstructor(ConditionalPerms.class);
+        Constructor<? extends AbstractHook> constructor = clazz.getDeclaredConstructor(ConditionalPerms.class);
         constructor.setAccessible(true);
-        return (AbstractHook) constructor.newInstance(plugin);
+        return constructor.newInstance(plugin);
     }
 }
